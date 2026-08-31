@@ -1,10 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<WasmFingerprintAssets>false</WasmFingerprintAssets>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Content Remove="wwwroot\js\chromeInterop.js" />
+	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Blazor.BrowserExtension" Version="5.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.*" />

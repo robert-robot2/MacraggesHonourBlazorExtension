@@ -1,0 +1,76 @@
+﻿@page "/settings"
+@inject IJSRuntime JS
+
+<PageTitle>Settings</PageTitle>
+
+<h3>⚙️ Settings</h3>
+
+<div class="setting-row">
+    <span>Extension Enabled</span>
+    <input type="checkbox" @bind="masterEnabled" />
+</div>
+<div class="setting-row">
+    <span>Intercept Regular Downloads</span>
+    <input type="checkbox" @bind="interceptRegular" />
+</div>
+<div class="setting-row">
+    <span>Intercept Auto Downloads</span>
+    <input type="checkbox" @bind="interceptAuto" />
+</div>
+<div class="setting-row">
+    <span>Intercept Email Downloads</span>
+    <input type="checkbox" @bind="interceptEmail" />
+</div>
+<div class="setting-row">
+    <span>Show Warning Popup</span>
+    <input type="checkbox" @bind="showPopup" />
+</div>
+
+<button @onclick="SaveSettings">💾 Save Settings</button>
+<p>@statusMessage</p>
+
+@code {
+    private bool masterEnabled = true;
+    private bool interceptRegular = true;
+    private bool interceptAuto = true;
+    private bool interceptEmail = true;
+    private bool showPopup = true;
+    private string statusMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await JS.InvokeAsync<SettingsData>("chromeInterop.getSettings");
+        if (result != null)
+        {
+            masterEnabled = result.MasterEnabled;
+            interceptRegular = result.InterceptRegular;
+            interceptAuto = result.InterceptAuto;
+            interceptEmail = result.InterceptEmail;
+            showPopup = result.ShowPopup;
+        }
+    }
+
+    private async Task SaveSettings()
+    {
+        await JS.InvokeVoidAsync("chromeInterop.saveSettings", new SettingsData
+        {
+            MasterEnabled = masterEnabled,
+            InterceptRegular = interceptRegular,
+            InterceptAuto = interceptAuto,
+            InterceptEmail = interceptEmail,
+            ShowPopup = showPopup
+        });
+        statusMessage = "✅ Saved!";
+        await Task.Delay(2000);
+        statusMessage = "";
+    }
+
+    private class SettingsData
+    {
+        public bool MasterEnabled { get; set; } = true;
+        public bool InterceptRegular { get; set; } = true;
+        public bool InterceptAuto { get; set; } = true;
+        public bool InterceptEmail { get; set; } = true;
+        public bool ShowPopup { get; set; } = true;
+    }
+}
