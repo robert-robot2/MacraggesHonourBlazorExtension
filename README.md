@@ -29,3 +29,7 @@ Acknowledgements
 A huge thank you to mingyaulee for creating and maintaining the Blazor.BrowserExtension package, which makes all of this possible. The broader Blazor and .NET open source community continues to push the boundaries of what's possible on the web.
 
 For the Emperor.
+<img width="1920" height="1080" alt="Screenshot 2026-08-31 150956" src="https://github.com/user-attachments/assets/508509f1-e87c-4856-808e-e6886ce69a37" />
+<img width="1920" height="1080" alt="Screenshot 2026-08-31 151004" src="https://github.com/user-attachments/assets/a7e1dc9d-20a4-4746-a6a3-49ba8cd1f896" />
+
+
