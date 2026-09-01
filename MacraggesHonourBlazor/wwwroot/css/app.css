@@ -1,6 +1,50 @@
 
 
 /* ============================================
+   SCROLLBARS
+   ============================================ */
+
+/* Width */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 4px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #FFD700;
+    border-radius: 4px;
+    opacity: 0.8;
+}
+
+    /* Handle hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #83EEFF;
+    }
+
+/* Corner where scrollbars meet */
+::-webkit-scrollbar-corner {
+    background: #0d0d0d;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #FFD700 #1a1a1a;
+}
+
+
+
+
+
+
+/* ============================================
    GLOBAL BASE
    ============================================ */
 
@@ -12,6 +56,7 @@
 
 html, body {
     height: 100%;
+    overflow: hidden;
     background: #0d0d0d;
     color: #e0e0e0;
     font-family: 'Exo 2', sans-serif;
@@ -163,12 +208,6 @@ code {
     box-sizing: border-box;
 }
 
-body {
-    width: 620px;
-    height: 420px;
-    overflow: hidden;
-    font-family: 'Segoe UI', sans-serif;
-}
 
 .warning-container {
     position: relative;

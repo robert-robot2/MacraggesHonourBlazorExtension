@@ -14,7 +14,8 @@
     "scripting",
     "search",
     "bookmarks",
-    "favicon"
+    "favicon",
+    "webNavigation"
   ],
   "host_permissions": [
     "https://outlook.live.com/*",

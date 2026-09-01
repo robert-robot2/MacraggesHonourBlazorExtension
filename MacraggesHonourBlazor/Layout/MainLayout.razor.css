@@ -6,6 +6,16 @@
 
 main {
     flex: 1;
+    overflow-y: auto;
+    height: 100vh;
+    min-width: 0;
+}
+
+article {
+    overflow-y: auto;
+    height: 100%;
+    width: 100%;
+    min-width: 0;
 }
 
 .sidebar {
