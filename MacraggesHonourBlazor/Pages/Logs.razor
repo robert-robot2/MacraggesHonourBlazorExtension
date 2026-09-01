@@ -1,0 +1,74 @@
+﻿@page "/logs"
+@inject IJSRuntime JS
+
+<PageTitle>Download Log</PageTitle>
+
+<h3>📋 Download Log</h3>
+
+<div class="log-controls">
+    <span>@entries.Count entries</span>
+    <button @onclick="ClearLog">🗑️ Clear Log</button>
+</div>
+
+@if (entries.Count == 0)
+{
+    <p>No downloads intercepted yet.</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Date/Time</th>
+                <th>File</th>
+                <th>Source</th>
+                <th>Type</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entry in entries)
+            {
+                <tr>
+                    <td>@entry.Datetime</td>
+                    <td>@entry.Filename</td>
+                    <td>@entry.Source</td>
+                    <td class="@(entry.IsBlob ? "type-blob" : "type-regular")">
+                        @(entry.IsBlob ? "📧 Email" : "🌐 Web")
+                    </td>
+                    <td class="@(entry.Result == "Cancelled" ? "result-cancelled" : "result-allowed")">
+                        @(entry.Result == "Cancelled" ? "❌ Cancelled" : "✅ Allowed")
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<LogEntry> entries = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await JS.InvokeAsync<List<LogEntry>>("chromeInterop.getLog");
+        if (result != null)
+        {
+            entries = Enumerable.Reverse(result).ToList(); // newest first
+        }
+    }
+
+    private async Task ClearLog()
+    {
+        await JS.InvokeVoidAsync("chromeInterop.clearLog");
+        entries = new();
+    }
+
+    private class LogEntry
+    {
+        public string Datetime { get; set; } = "";
+        public string Filename { get; set; } = "";
+        public string Source { get; set; } = "";
+        public bool IsBlob { get; set; }
+        public string Result { get; set; } = "";
+    }
+}

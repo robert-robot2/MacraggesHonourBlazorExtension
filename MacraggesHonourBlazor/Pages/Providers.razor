@@ -1,0 +1,90 @@
+﻿@page "/providers"
+@inject IJSRuntime JS
+
+<PageTitle>Email Providers</PageTitle>
+
+<h3>📧 Email Providers</h3>
+
+<p class="info">Add email provider domains to intercept. Example: mail.yahoo.com</p>
+
+<div class="input-row">
+    <input @bind="newProvider" placeholder="e.g. mail.yahoo.com" />
+    <button @onclick="AddProvider">➕ Add</button>
+</div>
+
+<ul class="provider-list">
+    @foreach (var provider in providers)
+    {
+        <li>
+            <span>🌐 @provider</span>
+            <button @onclick="() => RemoveProvider(provider)">❌ Remove</button>
+        </li>
+    }
+</ul>
+
+<button @onclick="RestoreDefaults">🔄 Restore Defaults</button>
+
+@if (!string.IsNullOrEmpty(statusMessage))
+{
+    <p>@statusMessage</p>
+}
+
+@code {
+    private List<string> providers = new();
+    private string newProvider = "";
+    private string statusMessage = "";
+
+    private static readonly List<string> DefaultProviders = new()
+    {
+        "outlook.live.com",
+        "mail.google.com",
+        "mail.proton.me"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await JS.InvokeAsync<List<string>>("chromeInterop.getProviders");
+        providers = result ?? new List<string>(DefaultProviders);
+    }
+
+    private async Task AddProvider()
+    {
+        var value = newProvider.Trim().ToLower();
+        if (string.IsNullOrEmpty(value)) return;
+
+        // TODO: When dynamic content script injection is implemented,
+        // this will also register the new provider with chrome.scripting
+        await JS.InvokeVoidAsync("chromeInterop.addProvider", value);
+        providers = await JS.InvokeAsync<List<string>>("chromeInterop.getProviders");
+        newProvider = "";
+        ShowStatus("⚠️ Added to list — note: only hardcoded providers are active until dynamic injection is implemented.");
+    }
+
+    private async Task RemoveProvider(string provider)
+    {
+        if (DefaultProviders.Contains(provider))
+        {
+            ShowStatus("⚠️ Cannot remove default providers yet — dynamic injection not implemented.");
+            return;
+        }
+        // TODO: Also unregister from chrome.scripting when implemented
+        await JS.InvokeVoidAsync("chromeInterop.removeProvider", provider);
+        providers = await JS.InvokeAsync<List<string>>("chromeInterop.getProviders");
+    }
+
+    private async Task RestoreDefaults()
+    {
+        await JS.InvokeVoidAsync("chromeInterop.restoreDefaults");
+        providers = new List<string>(DefaultProviders);
+        ShowStatus("✅ Defaults restored.");
+    }
+
+    private async void ShowStatus(string message)
+    {
+        statusMessage = message;
+        StateHasChanged();
+        await Task.Delay(3000);
+        statusMessage = "";
+        StateHasChanged();
+    }
+}
