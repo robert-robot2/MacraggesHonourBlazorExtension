@@ -11,7 +11,8 @@ window.chromeInterop = {
                     interceptRegular: s.interceptRegular !== false,
                     interceptAuto: s.interceptAuto !== false,
                     interceptEmail: s.interceptEmail !== false,
-                    showPopup: s.showPopup !== false
+                    showPopup: s.showPopup !== false,
+                    blockPopups: s.blockPopups !== false
                 });
             });
         });
@@ -24,7 +25,8 @@ window.chromeInterop = {
                     interceptRegular: settings.interceptRegular,
                     interceptAuto: settings.interceptAuto,
                     interceptEmail: settings.interceptEmail,
-                    showPopup: settings.showPopup
+                    showPopup: settings.showPopup,
+                    blockPopups: settings.blockPopups
                 }
             }, resolve);
         });
@@ -41,6 +43,19 @@ window.chromeInterop = {
             chrome.storage.local.set({ downloadLog: [] }, resolve);
         });
     },
+    getPopupLog: function () {
+        return new Promise(resolve => {
+            chrome.storage.local.get('popupBlockLog', function (data) {
+                resolve(data.popupBlockLog || []);
+            });
+        });
+    },
+    clearPopupLog: function () {
+        return new Promise(resolve => {
+            chrome.storage.local.set({ popupBlockLog: [] }, resolve);
+        });
+    },
+
     getProviders: function () {
         return new Promise(resolve => {
             chrome.storage.local.get('providers', function (data) {

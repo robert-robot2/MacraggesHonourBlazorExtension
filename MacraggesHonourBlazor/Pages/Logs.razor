@@ -45,6 +45,49 @@ else
     </table>
 }
 
+<div class="log-section-divider">
+    <h3>🚫 Popup Block Log</h3>
+</div>
+
+<div class="log-controls">
+    <span>@popupEntries.Count entries</span>
+    <button @onclick="ClearPopupLog">🗑️ Clear Log</button>
+</div>
+
+@if (popupEntries.Count == 0)
+{
+    <p>No popups blocked yet.</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Date/Time</th>
+                <th>Attempted URL</th>
+                <th>Source Tab</th>
+                <th>Type</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entry in popupEntries)
+            {
+                <tr>
+                    <td>@entry.Datetime</td>
+                    <td>@entry.AttemptedUrl</td>
+                    <td>@entry.SourceTab</td>
+                    <td>@(entry.PopupType == "window" ? "🪟 Window" : "🗂️ Tab")</td>
+                    <td class="result-cancelled">🚫 Blocked</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+
 @code {
     private List<LogEntry> entries = new();
 
@@ -52,10 +95,14 @@ else
     {
         var result = await JS.InvokeAsync<List<LogEntry>>("chromeInterop.getLog");
         if (result != null)
-        {
-            entries = Enumerable.Reverse(result).ToList(); // newest first
-        }
+            entries = Enumerable.Reverse(result).ToList();
+
+        var popupResult = await JS.InvokeAsync<List<PopupLogEntry>>("chromeInterop.getPopupLog");
+        if (popupResult != null)
+            popupEntries = Enumerable.Reverse(popupResult).ToList();
     }
+
+
 
     private async Task ClearLog()
     {
@@ -71,4 +118,24 @@ else
         public bool IsBlob { get; set; }
         public string Result { get; set; } = "";
     }
+    private List<PopupLogEntry> popupEntries = new();
+
+
+    // new clear method:
+    private async Task ClearPopupLog()
+    {
+        await JS.InvokeVoidAsync("chromeInterop.clearPopupLog");
+        popupEntries = new();
+    }
+
+    // new model class:
+    private class PopupLogEntry
+    {
+        public string Datetime { get; set; } = "";
+        public string AttemptedUrl { get; set; } = "";
+        public string SourceTab { get; set; } = "";
+        public string PopupType { get; set; } = "";
+    }
+
+
 }

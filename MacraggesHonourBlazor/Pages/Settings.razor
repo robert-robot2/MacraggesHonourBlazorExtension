@@ -25,7 +25,10 @@
     <span>Show Warning Popup</span>
     <input type="checkbox" @bind="showPopup" />
 </div>
-
+<div class="setting-row">
+    <span>Block All Popup Windows</span>
+    <input type="checkbox" @bind="blockPopups" />
+</div>
 <button @onclick="SaveSettings">💾 Save Settings</button>
 <p>@statusMessage</p>
 
@@ -36,6 +39,8 @@
     private bool interceptEmail = true;
     private bool showPopup = true;
     private string statusMessage = "";
+    private bool blockPopups = true;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -47,6 +52,7 @@
             interceptAuto = result.InterceptAuto;
             interceptEmail = result.InterceptEmail;
             showPopup = result.ShowPopup;
+            blockPopups = result.BlockPopups;
         }
     }
 
@@ -58,7 +64,8 @@
             InterceptRegular = interceptRegular,
             InterceptAuto = interceptAuto,
             InterceptEmail = interceptEmail,
-            ShowPopup = showPopup
+            ShowPopup = showPopup,
+            BlockPopups = blockPopups
         });
         statusMessage = "✅ Saved!";
         await Task.Delay(2000);
@@ -72,5 +79,6 @@
         public bool InterceptAuto { get; set; } = true;
         public bool InterceptEmail { get; set; } = true;
         public bool ShowPopup { get; set; } = true;
+        public bool BlockPopups { get; set; } = true;
     }
 }

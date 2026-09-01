@@ -5,6 +5,13 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<WasmFingerprintAssets>false</WasmFingerprintAssets>
 	</PropertyGroup>
+	<PropertyGroup>
+		<BlazorWebAssemblyLoadAllGlobalizationData>false</BlazorWebAssemblyLoadAllGlobalizationData>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>full</TrimMode>
+	</PropertyGroup>
 	<ItemGroup>
 	  <Content Remove="wwwroot\js\chromeInterop.js" />
 	</ItemGroup>
