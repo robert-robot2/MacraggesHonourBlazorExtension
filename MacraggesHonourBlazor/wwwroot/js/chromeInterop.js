@@ -89,5 +89,77 @@ window.chromeInterop = {
                 ]
             }, resolve);
         });
+    },
+    getPendingDownload: function () {
+        return new Promise(resolve => {
+            chrome.storage.session.get('pendingDownload', function (data) {
+                resolve(data.pendingDownload || null);
+            });
+        });
+    },
+    pollPendingDownload: function () {
+        return new Promise(resolve => {
+            chrome.storage.session.get('pendingDownload', function (data) {
+                resolve(data.pendingDownload || null);
+            });
+        });
+    },
+    cancelDownload: function (downloadId) {
+        return new Promise(resolve => {
+            chrome.downloads.cancel(downloadId, function () {
+                chrome.storage.local.get('downloadLog', function (data) {
+                    const log = data.downloadLog || [];
+                    if (log.length > 0) log[log.length - 1].result = 'Cancelled';
+                    chrome.storage.local.set({ downloadLog: log }, function () {
+                        chrome.storage.session.remove('pendingDownload', resolve);
+                    });
+                });
+            });
+        });
+    },
+    allowRegularDownload: function (downloadId) {
+        return new Promise(resolve => {
+            chrome.downloads.resume(downloadId, function () {
+                chrome.storage.local.get('downloadLog', function (data) {
+                    const log = data.downloadLog || [];
+                    if (log.length > 0) log[log.length - 1].result = 'Allowed';
+                    chrome.storage.local.set({ downloadLog: log }, function () {
+                        chrome.storage.session.remove('pendingDownload', resolve);
+                    });
+                });
+            });
+        });
+    },
+    allowBlobDownload: function (blobUrl, filename) {
+        return new Promise(resolve => {
+            chrome.tabs.query({}, function (tabs) {
+                const emailTab = tabs.find(tab =>
+                    tab.url && (
+                        tab.url.includes('outlook.live.com') ||
+                        tab.url.includes('mail.google.com') ||
+                        tab.url.includes('mail.proton.me')
+                    )
+                );
+                if (emailTab) {
+                    chrome.storage.session.set({ approvedBlob: true });
+                    chrome.tabs.sendMessage(emailTab.id, {
+                        action: 'redownloadBlob',
+                        blobUrl: blobUrl,
+                        filename: filename
+                    }, function () {
+                        chrome.storage.local.get('downloadLog', function (data) {
+                            const log = data.downloadLog || [];
+                            if (log.length > 0) log[log.length - 1].result = 'Allowed';
+                            chrome.storage.local.set({ downloadLog: log }, function () {
+                                chrome.storage.session.remove('pendingDownload', resolve);
+                            });
+                        });
+                    });
+                } else {
+                    chrome.storage.session.remove('pendingDownload', resolve);
+                }
+            });
+        });
     }
+
 };

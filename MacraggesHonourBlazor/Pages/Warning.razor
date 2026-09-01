@@ -1,0 +1,132 @@
+﻿@page "/warning"
+@layout WarningLayout
+@inject IJSRuntime JS
+@implements IDisposable
+
+<PageTitle>Macragge's Honour</PageTitle>
+
+<div class="warning-container">
+    <img class="bg-image" src="Icons/Background001.png" alt="Macragge's Honour" />
+    <div class="overlay">
+        <h1>⚠️ Macragge's Honour</h1>
+        <h2>Download Interceptor Scanner</h2>
+
+        <div class="file-info">
+            <p><strong>File:</strong> @filename</p>
+            <p><strong>Source:</strong> @source</p>
+            <div class="vt-result">
+                @if (isScanning)
+                {
+                    <p class="vt-scanning">🔍 Scanning with VirusTotal...</p>
+                }
+                <p class="@vtClass">@vtMessage</p>
+            </div>
+        </div>
+
+        <p class="warning-text">Are you sure you want to download this file?</p>
+        <p class="warning-text">It may contain threats to the Imperium!</p>
+        <p class="tvirus">ARE YOU REALLY SURE YOU WANT TO INFECT YOUR COMPUTER WITH THE ZOMBIE T-VIRUS BECAUSE YOU WILL IF YOU HIT YES.</p>
+
+        <div class="buttons">
+            <button class="cancel-btn" @onclick="Cancel">CANCEL</button>
+            <button class="download-btn" @onclick="DownloadAnyway">DOWNLOAD ANYWAY</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string filename = "Loading...";
+    private string source = "Loading...";
+    private string vtMessage = "";
+    private string vtClass = "";
+    private bool isScanning = false;
+    private bool isBlob = false;
+    private int downloadId;
+    private string blobUrl = "";
+    private Timer? pollTimer;
+
+    private class PendingDownload
+    {
+        public int Id { get; set; }
+        public string? Filename { get; set; }
+        public string? Url { get; set; }
+        public bool IsBlob { get; set; }
+        public VtResult? VtResult { get; set; }
+    }
+
+    private class VtResult
+    {
+        public string Status { get; set; } = "";
+        public string Message { get; set; } = "";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var download = await JS.InvokeAsync<PendingDownload>("chromeInterop.getPendingDownload");
+        if (download != null)
+        {
+            downloadId = download.Id;
+            isBlob = download.IsBlob;
+            blobUrl = download.Url ?? "";
+            source = download.Url ?? "Unknown Source";
+
+            // Clean up filename
+            var raw = download.Filename ?? "Email Attachment";
+            filename = raw.Split('\\').Last().Split('/').Last();
+
+            if (download.VtResult != null)
+            {
+                vtMessage = download.VtResult.Message;
+                vtClass = $"vt-{download.VtResult.Status}";
+                isScanning = false;
+            }
+            else
+            {
+                isScanning = true;
+                StartPolling();
+            }
+        }
+    }
+
+    private void StartPolling()
+    {
+        pollTimer = new Timer(async _ =>
+        {
+            var updated = await JS.InvokeAsync<PendingDownload>("chromeInterop.pollPendingDownload");
+            if (updated?.VtResult != null)
+            {
+                pollTimer?.Dispose();
+                isScanning = false;
+                vtMessage = updated.VtResult.Message;
+                vtClass = $"vt-{updated.VtResult.Status}";
+                await InvokeAsync(StateHasChanged);
+            }
+        }, null, 1000, 1000);
+    }
+
+    private async Task Cancel()
+    {
+        pollTimer?.Dispose();
+        await JS.InvokeVoidAsync("chromeInterop.cancelDownload", downloadId);
+        await JS.InvokeVoidAsync("window.close");
+    }
+
+    private async Task DownloadAnyway()
+    {
+        pollTimer?.Dispose();
+        if (isBlob)
+        {
+            await JS.InvokeVoidAsync("chromeInterop.allowBlobDownload", blobUrl, filename);
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("chromeInterop.allowRegularDownload", downloadId);
+        }
+        await JS.InvokeVoidAsync("window.close");
+    }
+
+    public void Dispose()
+    {
+        pollTimer?.Dispose();
+    }
+}

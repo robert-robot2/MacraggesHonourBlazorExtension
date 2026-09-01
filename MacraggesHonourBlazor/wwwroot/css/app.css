@@ -113,3 +113,199 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 620px;
+    height: 420px;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.warning-container {
+    position: relative;
+    width: 620px;
+    height: 420px;
+}
+
+.bg-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.overlay {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 10px;
+}
+
+h1 {
+    color: #FFD700;
+    font-size: 1.4rem;
+    text-shadow: 0 0 10px gold;
+}
+
+h2 {
+    color: #83EEFF;
+    font-size: 1rem;
+}
+
+.file-info {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 6px;
+    width: 100%;
+    text-align: center;
+    color: white;
+}
+
+.warning-text {
+    color: #FFD700;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.tvirus {
+    color: #FF3131;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-align: center;
+    text-shadow: 0 0 8px red;
+}
+
+.buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.cancel-btn {
+    background: #1a6b1a;
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+    .cancel-btn:hover {
+        background: #25a025;
+    }
+
+.download-btn {
+    background: #8b0000;
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+    .download-btn:hover {
+        background: #cc0000;
+    }
+
+.vt-result {
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+.vt-scanning {
+    color: #83EEFF;
+    font-size: 0.85rem;
+    animation: pulse 1.5s infinite;
+}
+
+.vt-score {
+    font-size: 0.95rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.vt-threat {
+    color: #FF3131;
+    text-shadow: 0 0 8px red;
+}
+
+.vt-suspicious {
+    color: #FFD700;
+    text-shadow: 0 0 8px gold;
+}
+
+.vt-clean {
+    color: #39ff14;
+    text-shadow: 0 0 8px green;
+}
+
+.vt-unknown {
+    color: #83EEFF;
+}
+
+.vt-error {
+    color: #888;
+}
+
+.vt-blob {
+    color: #888;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
+
+
