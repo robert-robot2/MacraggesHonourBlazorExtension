@@ -73,6 +73,8 @@ A huge thank you to [mingyaulee](https://github.com/mingyaulee) for creating and
 
 *For the Emperor.* ⚔️
 <img width="1920" height="1080" alt="Screenshot 2026-09-01 183004" src="https://github.com/user-attachments/assets/9ad83885-2c18-4504-a00b-5a5c11ec1a49" />
+<img width="1920" height="1080" alt="Screenshot 2026-09-02 161830" src="https://github.com/user-attachments/assets/aacc3c97-2af0-4376-aa7c-adbf037474dc" />
+
 
 
 
