@@ -24,6 +24,7 @@ else
                 <th>Source</th>
                 <th>Type</th>
                 <th>Result</th>
+                <th>Scan</th>
             </tr>
         </thead>
         <tbody>
@@ -38,6 +39,9 @@ else
                     </td>
                     <td class="@(entry.Result == "Cancelled" ? "result-cancelled" : "result-allowed")">
                         @(entry.Result == "Cancelled" ? "❌ Cancelled" : "✅ Allowed")
+                    </td>
+                    <td class="@GetScanClass(entry.ScanStatus)">
+                        @GetScanIcon(entry.ScanStatus) @entry.ScanStatus
                     </td>
                 </tr>
             }
@@ -110,6 +114,23 @@ else
         entries = new();
     }
 
+    private string GetScanClass(string status) => status switch
+    {
+        "threat" => "result-cancelled",
+        "suspicious" => "result-suspicious",
+        "clean" => "result-allowed",
+        _ => ""
+    };
+
+    private string GetScanIcon(string status) => status switch
+    {
+        "threat" => "🔴",
+        "suspicious" => "🟡",
+        "clean" => "🟢",
+        _ => "⚪"
+    };
+
+
     private class LogEntry
     {
         public string Datetime { get; set; } = "";
@@ -117,6 +138,7 @@ else
         public string Source { get; set; } = "";
         public bool IsBlob { get; set; }
         public string Result { get; set; } = "";
+        public string ScanStatus { get; set; } = "";
     }
     private List<PopupLogEntry> popupEntries = new();
 

@@ -4,7 +4,7 @@
 @implements IDisposable
 @using MacraggesHonourBlazor
 @inject VirusTotalService VtService
-
+@inject FileScannerService ScannerService
 
 <PageTitle>Macragge's Honour</PageTitle>
 
@@ -23,6 +23,13 @@
                     <p class="vt-scanning">🔍 Scanning with VirusTotal...</p>
                 }
                 <p class="@vtClass">@vtMessage</p>
+            </div>
+            <div class="vt-result">
+                @if (isCustomScanning)
+                {
+                    <p class="vt-scanning">🔍 Running Macragge Scanner...</p>
+                }
+                <p class="@customScanClass">@customScanMessage</p>
             </div>
         </div>
 
@@ -47,6 +54,9 @@
     private int downloadId;
     private string blobUrl = "";
     private Timer? pollTimer;
+    private string customScanMessage = "";
+    private string customScanClass = "";
+    private bool isCustomScanning = false;
 
     private class PendingDownload
     {
@@ -85,12 +95,42 @@
             else
             {
                 isScanning = true;
+                isCustomScanning = true;
                 StateHasChanged();
 
-                var result = await VtService.ScanUrl(download.Url ?? "");
+                // Run both scans in parallel
+                var vtTask = VtService.ScanUrl(download.Url ?? "");
+                var scanDataTask = JS.InvokeAsync<ScanData>("fileScanner.fetchScanData",
+                    download.Url, download.Filename).AsTask();
+
+                await Task.WhenAll(vtTask, scanDataTask);
+
+                // VT result
+                var result = await vtTask;
                 vtMessage = result.Message;
                 vtClass = $"vt-{result.Status}";
                 isScanning = false;
+
+                // Custom scan result
+                var scanData = scanDataTask.Result;
+                if (scanData != null && scanData.Success)
+                {
+                    var headerBytes = scanData.HeaderBytes?.Select(b => (byte)b).ToArray() ?? Array.Empty<byte>();
+                    var report = await ScannerService.ScanAsync(
+                        download.Filename ?? "",
+                        headerBytes,
+                        scanData.TextContent ?? "");
+
+                    customScanMessage = report.FinalMessage;
+                    customScanClass = $"vt-{report.FinalStatus}";
+                }
+                else
+                {
+                    customScanMessage = "⚪ Custom scan unavailable";
+                    customScanClass = "vt-unknown";
+                }
+
+                isCustomScanning = false;
                 StateHasChanged();
             }
         }
@@ -137,4 +177,13 @@
     {
         pollTimer?.Dispose();
     }
+
+    private class ScanData
+    {
+        public bool Success { get; set; }
+        public string? Filename { get; set; }
+        public List<int>? HeaderBytes { get; set; }
+        public string? TextContent { get; set; }
+    }
+
 }

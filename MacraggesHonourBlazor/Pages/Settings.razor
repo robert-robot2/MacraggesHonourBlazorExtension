@@ -29,6 +29,19 @@
     <span>Block All Popup Windows</span>
     <input type="checkbox" @bind="blockPopups" />
 </div>
+<div class="setting-row">
+    <span>Enable Custom File Scanner</span>
+    <input type="checkbox" @bind="enableCustomScanner" />
+</div>
+
+<div class="setting-row">
+    <span>Scan API</span>
+    <select @bind="scanApi">
+        <option value="both">🛡️ Both (VT + Macragge)</option>
+        <option value="virustotal">🌐 VirusTotal Only</option>
+        <option value="macragge">⚔️ Macragge Scanner Only</option>
+    </select>
+</div>
 <button @onclick="SaveSettings">💾 Save Settings</button>
 <p>@statusMessage</p>
 
@@ -40,7 +53,8 @@
     private bool showPopup = true;
     private string statusMessage = "";
     private bool blockPopups = true;
-
+    private bool enableCustomScanner = true;
+    private string scanApi = "both";
 
     protected override async Task OnInitializedAsync()
     {
@@ -53,6 +67,8 @@
             interceptEmail = result.InterceptEmail;
             showPopup = result.ShowPopup;
             blockPopups = result.BlockPopups;
+            enableCustomScanner = result.EnableCustomScanner;
+            scanApi = result.ScanApi ?? "both";
         }
     }
 
@@ -65,7 +81,9 @@
             InterceptAuto = interceptAuto,
             InterceptEmail = interceptEmail,
             ShowPopup = showPopup,
-            BlockPopups = blockPopups
+            BlockPopups = blockPopups,
+            EnableCustomScanner = enableCustomScanner,
+            ScanApi = scanApi
         });
         statusMessage = "✅ Saved!";
         await Task.Delay(2000);
@@ -80,5 +98,7 @@
         public bool InterceptEmail { get; set; } = true;
         public bool ShowPopup { get; set; } = true;
         public bool BlockPopups { get; set; } = true;
+        public bool EnableCustomScanner { get; set; } = true;
+        public string ScanApi { get; set; } = "both";
     }
 }

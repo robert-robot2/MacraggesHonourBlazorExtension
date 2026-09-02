@@ -291,7 +291,9 @@ h2 {
     .cancel-btn:hover {
         background: #25a025;
     }
-
+.result-suspicious {
+    color: #FFD700;
+}
 .download-btn {
     background: #8b0000;
     color: white;

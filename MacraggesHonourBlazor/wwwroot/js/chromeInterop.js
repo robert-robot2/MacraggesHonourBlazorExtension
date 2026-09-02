@@ -12,7 +12,9 @@ window.chromeInterop = {
                     interceptAuto: s.interceptAuto !== false,
                     interceptEmail: s.interceptEmail !== false,
                     showPopup: s.showPopup !== false,
-                    blockPopups: s.blockPopups !== false
+                    blockPopups: s.blockPopups !== false,
+                    enableCustomScanner: s.enableCustomScanner !== false,
+                    scanApi: s.scanApi || 'both'
                 });
             });
         });
@@ -26,7 +28,9 @@ window.chromeInterop = {
                     interceptAuto: settings.interceptAuto,
                     interceptEmail: settings.interceptEmail,
                     showPopup: settings.showPopup,
-                    blockPopups: settings.blockPopups
+                    blockPopups: settings.blockPopups,
+                    enableCustomScanner: settings.enableCustomScanner,
+                    scanApi: settings.scanApi
                 }
             }, resolve);
         });
