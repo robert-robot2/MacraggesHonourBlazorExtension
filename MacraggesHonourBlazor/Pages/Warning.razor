@@ -65,6 +65,8 @@
         public string? Url { get; set; }
         public bool IsBlob { get; set; }
         public VtResult? VtResult { get; set; }
+        public List<int>? HeaderBytes { get; set; }
+        public string? TextContent { get; set; }
     }
 
     private class VtResult
@@ -98,39 +100,23 @@
                 isCustomScanning = true;
                 StateHasChanged();
 
-                // Run both scans in parallel
-                var vtTask = VtService.ScanUrl(download.Url ?? "");
-                var scanDataTask = JS.InvokeAsync<ScanData>("fileScanner.fetchScanData",
-                    download.Url, download.Filename).AsTask();
+                // Run Macragge scanner immediately — data already in pendingDownload
+                var headerBytes = download.HeaderBytes?.Select(b => (byte)b).ToArray() ?? Array.Empty<byte>();
+                var scanFilename = download.Filename ?? "";
+                if (string.IsNullOrEmpty(scanFilename))
+                    scanFilename = download.Url?.Split('/').Last().Split('?').First() ?? "unknown";
 
-                await Task.WhenAll(vtTask, scanDataTask);
+                var report = await ScannerService.ScanAsync(scanFilename, headerBytes, download.TextContent ?? "");
+                customScanMessage = report.FinalMessage;
+                customScanClass = $"vt-{report.FinalStatus}";
+                isCustomScanning = false;
 
-                // VT result
-                var result = await vtTask;
+                // VT scan
+                var result = await VtService.ScanUrl(download.Url ?? "");
                 vtMessage = result.Message;
                 vtClass = $"vt-{result.Status}";
                 isScanning = false;
-
-                // Custom scan result
-                var scanData = scanDataTask.Result;
-                if (scanData != null && scanData.Success)
-                {
-                    var headerBytes = scanData.HeaderBytes?.Select(b => (byte)b).ToArray() ?? Array.Empty<byte>();
-                    var report = await ScannerService.ScanAsync(
-                        download.Filename ?? "",
-                        headerBytes,
-                        scanData.TextContent ?? "");
-
-                    customScanMessage = report.FinalMessage;
-                    customScanClass = $"vt-{report.FinalStatus}";
-                }
-                else
-                {
-                    customScanMessage = "⚪ Custom scan unavailable";
-                    customScanClass = "vt-unknown";
-                }
-
-                isCustomScanning = false;
+                await JS.InvokeVoidAsync("chromeInterop.updateScanLog", report.FinalStatus, report.FinalMessage);
                 StateHasChanged();
             }
         }

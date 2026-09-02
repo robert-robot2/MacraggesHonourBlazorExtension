@@ -88,7 +88,44 @@ else
         </tbody>
     </table>
 }
+<div class="log-section-divider">
+    <h3>🛡️ Macragge Scan Log</h3>
+</div>
 
+<div class="log-controls">
+    <span>@entries.Count(e => e.ScanStatus != "unknown") entries</span>
+</div>
+
+@if (!entries.Any(e => e.ScanStatus != "unknown"))
+{
+    <p>No scans recorded yet.</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Date/Time</th>
+                <th>File</th>
+                <th>Scan Result</th>
+                <th>Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entry in entries.Where(e => e.ScanStatus != "unknown"))
+            {
+                <tr>
+                    <td>@entry.Datetime</td>
+                    <td>@entry.Filename</td>
+                    <td class="@GetScanClass(entry.ScanStatus)">
+                        @GetScanIcon(entry.ScanStatus) @entry.ScanStatus
+                    </td>
+                    <td>@entry.ScanMessage</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 
 
@@ -139,6 +176,7 @@ else
         public bool IsBlob { get; set; }
         public string Result { get; set; } = "";
         public string ScanStatus { get; set; } = "";
+        public string ScanMessage { get; set; } = "";
     }
     private List<PopupLogEntry> popupEntries = new();
 

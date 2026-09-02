@@ -29,7 +29,7 @@
 
             // Aggregate final verdict — worst result wins
             report.FinalStatus = AggregateSatus(extensionResult, wordResult, codeResult);
-            report.FinalMessage = BuildFinalMessage(report.FinalStatus, report.Results);
+            report.FinalMessage = BuildFinalMessage(report.FinalStatus, report.Results, report.Filename);
 
             // TODO: AI integration hook — pass report to AI commander
             // TODO: Feed report into AI natural language summary
@@ -52,13 +52,13 @@
         // =============================================
         // BUILD FINAL MESSAGE
         // =============================================
-        private string BuildFinalMessage(string status, List<ScanResult> results)
+        private string BuildFinalMessage(string status, List<ScanResult> results, string filename)
         {
             var activeResults = results
                 .Where(r => r.Status != "skipped" && r.Status != "unknown")
                 .ToList();
 
-            var summary = string.Join(" | ", activeResults.Select(r => r.Message));
+            var summary = $"File: {filename} | " + string.Join(" | ", activeResults.Select(r => r.Message));
 
             return status switch
             {

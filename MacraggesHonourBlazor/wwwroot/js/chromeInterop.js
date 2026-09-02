@@ -179,6 +179,18 @@ window.chromeInterop = {
                 }
             });
         });
-    }
+    },
+    updateScanLog: function (scanStatus, scanMessage) {
+        return new Promise(resolve => {
+            chrome.storage.local.get('downloadLog', function (data) {
+                const log = data.downloadLog || [];
+                if (log.length > 0) {
+                    log[log.length - 1].scanStatus = scanStatus;
+                    log[log.length - 1].scanMessage = scanMessage;
+                }
+                chrome.storage.local.set({ downloadLog: log }, resolve);
+            });
+        });
+    },
 
 };

@@ -97,13 +97,13 @@ namespace MacraggesHonourBlazor
 
             return new ScanResult
             {
-                Status = extStatus,
+                Status = "suspicious",
                 Message = extStatus switch
                 {
-                    "threat" => $"🔴 HIGH RISK file type: {ext}",
-                    "suspicious" => $"🟡 SUSPICIOUS file type: {ext} — proceed with caution",
-                    "clean" => $"🟢 File type {ext} appears safe",
-                    _ => $"⚪ Unknown file type: {ext}"
+                    "threat" => $"🔴 HIGH RISK file type detected: {ext}",
+                    "suspicious" => $"🟡 SUSPICIOUS file type detected: {ext}",
+                    "clean" => $"🟡 File type detected: {ext}",
+                    _ => $"🟡 File type detected: {ext}"
                 },
                 Scanner = "ExtensionScanner"
             };
