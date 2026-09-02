@@ -12,4 +12,6 @@ builder.UseBrowserExtension(browserExtension =>
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
+builder.Services.AddScoped<VirusTotalService>();
+
 await builder.Build().RunAsync();

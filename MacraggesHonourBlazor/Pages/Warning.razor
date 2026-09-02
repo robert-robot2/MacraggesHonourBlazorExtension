@@ -2,6 +2,9 @@
 @layout WarningLayout
 @inject IJSRuntime JS
 @implements IDisposable
+@using MacraggesHonourBlazor
+@inject VirusTotalService VtService
+
 
 <PageTitle>Macragge's Honour</PageTitle>
 
@@ -70,20 +73,25 @@
             blobUrl = download.Url ?? "";
             source = download.Url ?? "Unknown Source";
 
-            // Clean up filename
             var raw = download.Filename ?? "Email Attachment";
             filename = raw.Split('\\').Last().Split('/').Last();
 
-            if (download.VtResult != null)
+            if (isBlob)
             {
-                vtMessage = download.VtResult.Message;
-                vtClass = $"vt-{download.VtResult.Status}";
+                vtMessage = "⚪ Email attachment — cannot scan";
+                vtClass = "vt-blob";
                 isScanning = false;
             }
             else
             {
                 isScanning = true;
-                StartPolling();
+                StateHasChanged();
+
+                var result = await VtService.ScanUrl(download.Url ?? "");
+                vtMessage = result.Message;
+                vtClass = $"vt-{result.Status}";
+                isScanning = false;
+                StateHasChanged();
             }
         }
     }
