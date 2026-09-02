@@ -1,14 +1,7 @@
 # MacraggesHonourBlazor
 
-A Blazor WebAssembly browser extension base template for .NET 10, built on top of the excellent [Blazor.BrowserExtension](https://github.com/mingyaulee/Blazor.BrowserExtension) package by [mingyaulee](https://github.com/mingyaulee).
 
----
-
-## Overview
-
-This project serves as a foundation for building browser extensions using Blazor WebAssembly. It demonstrates a fully client-side .NET 10 Blazor application running inside a browser extension — no server required.
-
-Use this as a starting point for your own Blazor-powered browser extension projects.
+A Blazor WebAssembly browser extension For intercepting and Scanning Downloads for .NET 10, built on top of the excellent [Blazor.BrowserExtension](https://github.com/mingyaulee/Blazor.BrowserExtension) package by [mingyaulee](https://github.com/mingyaulee).
 
 ---
 
